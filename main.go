@@ -12,24 +12,22 @@ type User struct {
 	Email string `json:"email"`
 }
 
-type users map[int] User
 
-func (u users) ServeHTTP(w http.ResponseWriter, r *http.Request){
-	for nickName,email  := range u {
-		fmt.Printf("email : %v nickName : %v",email,nickName)
-	}
+func test (users map[int]User ){
+	fmt.Println(users)
 }
 
 func main() {
- 	userss := users{
-		1:{Email: "Test",NickName: "sss"},
-	}
+
+	 users := make(map[int]*User)
+
 	pk := 0
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
-
+			
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(userss)
+			w.Header().Set("Content-Type","application/json")
+			json.NewEncoder(w).Encode(users)
 
 		case http.MethodPost:
 			var user User
@@ -38,17 +36,15 @@ func main() {
 
 			json.NewDecoder(r.Body).Decode(&user)
 
-			println(&user,"user")
 			pk =+ pk +1
-			userss[pk] = user
+			users[pk] = &user
 
+			w.Header().Set("Content-Type","application/json")
 			json.NewEncoder(w).Encode(user)
-			println(&user,"user")
-
 		}
 	})
 
-	log.Fatal(http.ListenAndServe(":5050", userss))
+	log.Fatal(http.ListenAndServe(":5050", nil))
 
 }
 
