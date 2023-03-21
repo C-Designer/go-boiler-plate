@@ -24,7 +24,7 @@ func main() {
 	pk := 0
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
-			
+
 		case http.MethodGet:
 			w.Header().Set("Content-Type","application/json")
 			json.NewEncoder(w).Encode(users)
