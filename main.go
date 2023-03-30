@@ -8,14 +8,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dudckd6744/go-sever-study/modules/board"
-	"github.com/dudckd6744/go-sever-study/modules/user"
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type User struct {
-	NickName string `json:"nickName"`
-	Email    string `json:"email"`
+type Users struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
 }
 
 func DBConfig() *sql.DB {
@@ -45,20 +43,34 @@ func main() {
 
 	db := DBConfig()
 
-	users := make(map[int]*User)
-
 	http.HandleFunc("/api/user", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 
 		case http.MethodGet:
 
-			w.Header().Set("Content-Type", "application/json")
+			query := `select id,name from User`
 
-			json.NewEncoder(w).Encode(users)
+			rows, err := db.Query(query)
 
-			user.FindUser()
+			if err != nil {
+				panic(err.Error())
+			}
 
-			board.FindBoard()
+			var usersArray []Users
+
+			for rows.Next() {
+				users := Users{}
+				rows.Scan(&users.Id, &users.Name)
+
+				usersArray = append(usersArray, users)
+			}
+
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			json.NewEncoder(w).Encode(usersArray)
+
+			// user.FindUser()
+
+			// board.FindBoard()
 
 		case http.MethodPost:
 
