@@ -1,13 +1,11 @@
 package main
 
 import (
-	"database/sql"
-	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
-	"time"
 
+	"github.com/dudckd6744/go-sever-study/config"
+	"github.com/dudckd6744/go-sever-study/modules/user"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -16,84 +14,61 @@ type Users struct {
 	Name string `json:"name"`
 }
 
-func DBConfig() *sql.DB {
-	db, err := sql.Open("mysql", "root:12341234@tcp(localhost:3306)/go_test")
-
-	if err != nil {
-		fmt.Printf("Error %s when opening DB\n", err)
-	}
-	db.SetConnMaxIdleTime(10)
-	db.SetMaxOpenConns(10)
-	db.SetConnMaxLifetime(time.Minute * 3)
-
-	query := `CREATE TABLE IF NOT EXISTS User(id int primary key auto_increment, name text,  email varchar(20) ,
-		age int, created_at datetime default CURRENT_TIMESTAMP, updated_at datetime default CURRENT_TIMESTAMP)`
-	res, err1 := db.Exec(query)
-
-	if err1 != nil {
-		fmt.Printf("query failed %s \n", err1)
-
-	}
-	fmt.Printf("query success %+v \n", res)
-
-	return db
-}
-
 func main() {
 
-	db := DBConfig()
+	db, _ := config.ConnectionDB()
 
-	http.HandleFunc("/api/user", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
+	http.HandleFunc("/api/v1/user", func(w http.ResponseWriter, r *http.Request) {
 
-		case http.MethodGet:
+		user.UserController(w, r, db)
+		// switch r.Method {
 
-			query := `select id,name from User`
+		// case http.MethodGet:
 
-			rows, err := db.Query(query)
+		// 	query := `select id,name from User`
 
-			if err != nil {
-				panic(err.Error())
-			}
+		// 	rows, err := db.Query(query)
 
-			var usersArray []Users
+		// 	if err != nil {
+		// 		panic(err.Error())
+		// 	}
 
-			for rows.Next() {
-				users := Users{}
-				rows.Scan(&users.Id, &users.Name)
+		// 	var usersArray []Users
 
-				usersArray = append(usersArray, users)
-			}
+		// 	for rows.Next() {
+		// 		users := Users{}
+		// 		rows.Scan(&users.Id, &users.Name)
 
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			json.NewEncoder(w).Encode(usersArray)
+		// 		usersArray = append(usersArray, users)
+		// 	}
 
-			// user.FindUser()
+		// 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		// 	json.NewEncoder(w).Encode(usersArray)
 
-			// board.FindBoard()
+		// 	// user.FindUser()
 
-		case http.MethodPost:
+		// case http.MethodPost:
 
-			println(r.PostFormValue("test"))
+		// 	println(r.PostFormValue("test"))
 
-			fmt.Printf(" req.body : %+v  ", r.PostForm)
+		// 	fmt.Printf(" req.body : %+v  ", r.PostForm)
 
-			body := r.PostForm
+		// 	body := r.PostForm
 
-			query := `insert into User (email, name, age) values (?,?,?)`
+		// 	query := `insert into User (email, name, age) values (?,?,?)`
 
-			stmp, _ := db.Prepare(query)
+		// 	stmp, _ := db.Prepare(query)
 
-			_, err := stmp.Exec(body.Get("email"), body.Get("name"), body.Get("age"))
+		// 	_, err := stmp.Exec(body.Get("email"), body.Get("name"), body.Get("age"))
 
-			if err != nil {
-				log.Fatal(err)
-			}
+		// 	if err != nil {
+		// 		log.Fatal(err)
+		// 	}
 
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(body)
-			// return
-		}
+		// 	w.Header().Set("Content-Type", "application/json")
+		// 	json.NewEncoder(w).Encode(body)
+		// 	// return
+		// }
 	})
 
 	log.Fatal(http.ListenAndServe(":5050", nil))
