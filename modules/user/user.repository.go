@@ -10,6 +10,12 @@ type UserDto struct {
 	Name  string
 }
 
+type UserRaw struct {
+	Id    int
+	Email string
+	Name  string
+}
+
 type UserRepository struct {
 	DB *sql.DB
 }
@@ -34,5 +40,31 @@ func (r *UserRepository) createUser(payload UserDto) (sql.Result, error) {
 	}
 
 	return result, nil
+}
 
+func (r *UserRepository) findAllUser() ([]UserRaw, error) {
+	var raws []UserRaw
+
+	query := `select id,email,name from User`
+
+	result, err := r.DB.Query(query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for result.Next() {
+		var raw UserRaw
+
+		err := result.Scan(&raw.Id, &raw.Email, &raw.Name)
+
+		if err != nil {
+			return nil, err
+		}
+
+		raws = append(raws, raw)
+	}
+
+	fmt.Println(&raws)
+	return raws, nil
 }

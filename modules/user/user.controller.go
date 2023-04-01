@@ -51,6 +51,14 @@ func UserController(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		}
 
 		Response(w, "OK", http.StatusOK, nil)
+	case http.MethodGet:
+		result, err := Service.findAllUser()
+
+		if err != nil {
+			Response(w, nil, http.StatusBadRequest, err)
+		}
+
+		Response(w, result, http.StatusOK, nil)
 	}
 
 }

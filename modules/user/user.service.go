@@ -19,3 +19,10 @@ func (s *UserService) createUser(payload UserDto) (sql.Result, error) {
 
 	return raw, err
 }
+
+func (s *UserService) findAllUser() ([]UserRaw, error) {
+
+	result, err := s.repository.findAllUser()
+
+	return result, err
+}
