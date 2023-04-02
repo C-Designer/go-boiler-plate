@@ -1,6 +1,8 @@
 package user
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 type UserService struct {
 	repository *UserRepository
@@ -20,7 +22,7 @@ func (s *UserService) createUser(payload UserDto) (sql.Result, error) {
 	return raw, err
 }
 
-func (s *UserService) findAllUser() ([]UserRaw, error) {
+func (s *UserService) findAllUser() (*[]UserRaw, error) {
 
 	result, err := s.repository.findAllUser()
 

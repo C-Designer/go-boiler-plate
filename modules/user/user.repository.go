@@ -42,7 +42,7 @@ func (r *UserRepository) createUser(payload UserDto) (sql.Result, error) {
 	return result, nil
 }
 
-func (r *UserRepository) findAllUser() ([]UserRaw, error) {
+func (r *UserRepository) findAllUser() (*[]UserRaw, error) {
 	var raws []UserRaw
 
 	query := `select id,email,name from User`
@@ -65,6 +65,9 @@ func (r *UserRepository) findAllUser() ([]UserRaw, error) {
 		raws = append(raws, raw)
 	}
 
-	fmt.Println(&raws)
-	return raws, nil
+	/**
+	struct 타입을 포인터로 return 시키는 이유
+	- 데이터를 포인터로 지정안하고 반환할 경우 변수 대입과 함수 인수 전달은 항상 값을 복사하기 때문에 메모리 비효율과 성능 문제를 발생시킨다.
+	**/
+	return &raws, nil
 }
