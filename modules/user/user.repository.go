@@ -2,7 +2,7 @@ package user
 
 import (
 	"database/sql"
-	"fmt"
+	"errors"
 )
 
 type UserDto struct {
@@ -11,9 +11,9 @@ type UserDto struct {
 }
 
 type UserRaw struct {
-	Id    int
-	Email string
-	Name  string
+	Id    int    `json:"id"`
+	Email string `json:"email"`
+	Name  string `json:"name"`
 }
 
 type UserRepository struct {
@@ -30,12 +30,9 @@ func (r *UserRepository) createUser(payload UserDto) (sql.Result, error) {
 
 	query := `insert into User (email, name) values (? , ?)`
 
-	fmt.Print("test", payload)
 	result, err := r.DB.Exec(query, payload.Email, payload.Name)
 
-	fmt.Print("test", result)
 	if err != nil {
-		fmt.Print("test", err)
 		return nil, err
 	}
 
@@ -70,4 +67,21 @@ func (r *UserRepository) findAllUser() (*[]UserRaw, error) {
 	- 데이터를 포인터로 지정안하고 반환할 경우 변수 대입과 함수 인수 전달은 항상 값을 복사하기 때문에 메모리 비효율과 성능 문제를 발생시킨다.
 	**/
 	return &raws, nil
+}
+func (r *UserRepository) findDetailUser(id int) (*UserRaw, error) {
+
+	var raw UserRaw
+
+	query := `select id,email,name from User where id = ?`
+
+	err := r.DB.QueryRow(query, id).Scan(&raw.Id, &raw.Email, &raw.Name)
+
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			return nil, errors.New("NOT FOUND")
+		}
+		return nil, err
+	}
+
+	return &raw, nil
 }

@@ -28,3 +28,10 @@ func (s *UserService) findAllUser() (*[]UserRaw, error) {
 
 	return result, err
 }
+
+func (s *UserService) findDetailUser(id int) (*UserRaw, error) {
+
+	result, err := s.repository.findDetailUser(id)
+
+	return result, err
+}

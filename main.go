@@ -18,57 +18,8 @@ func main() {
 
 	db, _ := config.ConnectionDB()
 
-	http.HandleFunc("/api/v1/user", func(w http.ResponseWriter, r *http.Request) {
-
+	http.HandleFunc("/api/v1/user/", func(w http.ResponseWriter, r *http.Request) {
 		user.UserController(w, r, db)
-		// switch r.Method {
-
-		// case http.MethodGet:
-
-		// 	query := `select id,name from User`
-
-		// 	rows, err := db.Query(query)
-
-		// 	if err != nil {
-		// 		panic(err.Error())
-		// 	}
-
-		// 	var usersArray []Users
-
-		// 	for rows.Next() {
-		// 		users := Users{}
-		// 		rows.Scan(&users.Id, &users.Name)
-
-		// 		usersArray = append(usersArray, users)
-		// 	}
-
-		// 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		// 	json.NewEncoder(w).Encode(usersArray)
-
-		// 	// user.FindUser()
-
-		// case http.MethodPost:
-
-		// 	println(r.PostFormValue("test"))
-
-		// 	fmt.Printf(" req.body : %+v  ", r.PostForm)
-
-		// 	body := r.PostForm
-
-		// 	query := `insert into User (email, name, age) values (?,?,?)`
-
-		// 	stmp, _ := db.Prepare(query)
-
-		// 	_, err := stmp.Exec(body.Get("email"), body.Get("name"), body.Get("age"))
-
-		// 	if err != nil {
-		// 		log.Fatal(err)
-		// 	}
-
-		// 	w.Header().Set("Content-Type", "application/json")
-		// 	json.NewEncoder(w).Encode(body)
-		// 	// return
-		// }
 	})
 
 	log.Fatal(http.ListenAndServe(":5050", nil))
