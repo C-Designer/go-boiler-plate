@@ -99,6 +99,11 @@ func UserController(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			}
 			Response(w, result, http.StatusOK, nil)
 		}
+		/**
+		* patch API 작업하다가 포인터 변수로 함수전달하는데 메모리가 각각 함수마다 달라지길래 원인 파악
+		* bear://x-callback-url/open-note?id=06FCABCE-2750-4C4F-9A8A-831AFAB6CBA4-1458-000005C23D966CD4
+		* patch API가 현재 수정이 안됨. 쿼리단에 문제가 있는듯...
+		**/
 	case http.MethodPatch:
 		// string의 zeroValue는 ""
 		stringTypeId := strings.TrimPrefix(r.URL.Path, "/api/v1/user/")
