@@ -3,6 +3,7 @@ package user
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 )
 
 type UserDto struct {
@@ -26,7 +27,7 @@ func (r *UserRepository) AssignDB(db *sql.DB) {
 	r.DB = db
 }
 
-func (r *UserRepository) createUser(payload UserDto) (sql.Result, error) {
+func (r *UserRepository) CreateUser(payload UserDto) (sql.Result, error) {
 
 	query := `insert into User (email, name) values (? , ?)`
 
@@ -39,7 +40,7 @@ func (r *UserRepository) createUser(payload UserDto) (sql.Result, error) {
 	return result, nil
 }
 
-func (r *UserRepository) findAllUser() (*[]UserRaw, error) {
+func (r *UserRepository) FindAllUser() (*[]UserRaw, error) {
 	var raws []UserRaw
 
 	query := `select id,email,name from User`
@@ -68,7 +69,7 @@ func (r *UserRepository) findAllUser() (*[]UserRaw, error) {
 	**/
 	return &raws, nil
 }
-func (r *UserRepository) findDetailUser(id int) (*UserRaw, error) {
+func (r *UserRepository) FindDetailUser(id int) (*UserRaw, error) {
 
 	var raw UserRaw
 
@@ -84,4 +85,17 @@ func (r *UserRepository) findDetailUser(id int) (*UserRaw, error) {
 	}
 
 	return &raw, nil
+}
+
+func (r *UserRepository) PatchUserName(id int, name *string) (sql.Result, error) {
+	query := `update User set name = (?) where id =? `
+
+	fmt.Println(name)
+	affected, err := r.DB.Exec(query, name, id)
+
+	if err != nil {
+		return nil, errors.New("CANT_NOT_MODIFY")
+	}
+
+	return affected, nil
 }

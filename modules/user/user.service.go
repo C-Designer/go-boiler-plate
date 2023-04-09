@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"fmt"
 )
 
 type UserService struct {
@@ -16,22 +17,30 @@ func (s *UserService) InitService(db *sql.DB) {
 	s.repository.AssignDB(db)
 }
 
-func (s *UserService) createUser(payload UserDto) (sql.Result, error) {
-	raw, err := s.repository.createUser(payload)
+func (s *UserService) CreateUser(payload UserDto) (sql.Result, error) {
+	raw, err := s.repository.CreateUser(payload)
 
 	return raw, err
 }
 
-func (s *UserService) findAllUser() (*[]UserRaw, error) {
+func (s *UserService) FindAllUser() (*[]UserRaw, error) {
 
-	result, err := s.repository.findAllUser()
+	result, err := s.repository.FindAllUser()
 
 	return result, err
 }
 
-func (s *UserService) findDetailUser(id int) (*UserRaw, error) {
+func (s *UserService) FindDetailUser(id int) (*UserRaw, error) {
 
-	result, err := s.repository.findDetailUser(id)
+	result, err := s.repository.FindDetailUser(id)
+
+	return result, err
+}
+
+func (s *UserService) PatchUserName(id int, name *string) (sql.Result, error) {
+	fmt.Println(&name)
+
+	result, err := s.repository.PatchUserName(id, name)
 
 	return result, err
 }

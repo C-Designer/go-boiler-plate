@@ -35,6 +35,7 @@ func Response(w http.ResponseWriter, data interface{}, status int, error error, 
 }
 
 func UserController(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	// 서버 오류날때 서버다운되지않게
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Print(r)
@@ -45,6 +46,7 @@ func UserController(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	Service.InitService(db)
 
 	switch r.Method {
+	// POST 생성
 	case http.MethodPost:
 		var body struct {
 			Email string
@@ -53,13 +55,14 @@ func UserController(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 		json.NewDecoder(r.Body).Decode(&body)
 
-		_, err := Service.createUser(body)
+		_, err := Service.CreateUser(body)
 
 		if err != nil {
 			Response(w, nil, http.StatusBadRequest, err)
 		}
 
 		Response(w, "OK", http.StatusOK, nil)
+	// GET 조회
 	case http.MethodGet:
 		// 별도 라우팅 패키지를 사용하지않으면 query Param은 직접 URL 구문 분석해야됨
 
@@ -71,7 +74,7 @@ func UserController(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 		// param이 없다는건 findAllUser함수를 호출하는것
 		if conversionNumberTypeId == 0 {
-			result, err := Service.findAllUser()
+			result, err := Service.FindAllUser()
 
 			if err != nil {
 				Response(w, nil, http.StatusBadRequest, err)
@@ -83,7 +86,7 @@ func UserController(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			// param 으로 넘오면 id로 특정 User 찾기
 		} else {
 
-			result, err := Service.findDetailUser(conversionNumberTypeId)
+			result, err := Service.FindDetailUser(conversionNumberTypeId)
 
 			if err != nil {
 				switch err.Error() {
@@ -96,6 +99,24 @@ func UserController(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			}
 			Response(w, result, http.StatusOK, nil)
 		}
+	case http.MethodPatch:
+		// string의 zeroValue는 ""
+		stringTypeId := strings.TrimPrefix(r.URL.Path, "/api/v1/user/")
+
+		// int의 zeroValue는 0
+		conversionNumberTypeId, _ := strconv.Atoi(stringTypeId)
+
+		var name *string
+		json.NewDecoder(r.Body).Decode(&name)
+
+		fmt.Println(name)
+		fmt.Println(&name)
+		result, err := Service.PatchUserName(conversionNumberTypeId, name)
+
+		if err != nil {
+			Response(w, nil, http.StatusBadRequest, err)
+		}
+		Response(w, result, http.StatusOK, nil)
 
 	}
 
