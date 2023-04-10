@@ -42,3 +42,10 @@ func (s *UserService) PatchUserName(id *int, body *struct{ Name string }) (sql.R
 
 	return result, err
 }
+
+func (s *UserService) DeleteUserById(id *int) (sql.Result, error) {
+
+	result, err := s.repository.DeleteUserById(id)
+
+	return result, err
+}

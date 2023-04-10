@@ -134,7 +134,25 @@ func UserController(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			Response(w, nil, http.StatusBadRequest, err)
 			return
 		}
-		Response(w, result, http.StatusOK, nil)
+
+		affected, _ := result.RowsAffected()
+
+		Response(w, affected, http.StatusOK, nil)
+	case http.MethodDelete:
+		// string의 zeroValue는 ""
+		stringTypeId := strings.TrimPrefix(r.URL.Path, "/api/v1/user/")
+
+		// int의 zeroValue는 0
+		conversionNumberTypeId, _ := strconv.Atoi(stringTypeId)
+
+		_, err := Service.DeleteUserById(&conversionNumberTypeId)
+
+		if err != nil {
+			Response(w, nil, http.StatusBadRequest, err)
+			return
+		}
+
+		Response(w, "OK", http.StatusOK, nil)
 
 	}
 

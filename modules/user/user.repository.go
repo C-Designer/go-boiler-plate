@@ -97,3 +97,15 @@ func (r *UserRepository) PatchUserName(id *int, body *struct{ Name string }) (sq
 
 	return affected, nil
 }
+
+func (r *UserRepository) DeleteUserById(id *int) (sql.Result, error) {
+	query := `delete from User where id =?`
+
+	result, err := r.DB.Exec(query, *id)
+
+	if err != nil {
+		return nil, errors.New("CANT_NOT_DELETE_USER")
+	}
+
+	return result, nil
+}
