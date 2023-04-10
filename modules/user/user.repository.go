@@ -3,7 +3,6 @@ package user
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 )
 
 type UserDto struct {
@@ -87,11 +86,10 @@ func (r *UserRepository) FindDetailUser(id int) (*UserRaw, error) {
 	return &raw, nil
 }
 
-func (r *UserRepository) PatchUserName(id int, name *string) (sql.Result, error) {
+func (r *UserRepository) PatchUserName(id *int, body *struct{ Name string }) (sql.Result, error) {
 	query := `update User set name = (?) where id =? `
 
-	fmt.Println(name)
-	affected, err := r.DB.Exec(query, name, id)
+	affected, err := r.DB.Exec(query, body.Name, *id)
 
 	if err != nil {
 		return nil, errors.New("CANT_NOT_MODIFY")

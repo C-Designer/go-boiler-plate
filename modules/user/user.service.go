@@ -2,7 +2,6 @@ package user
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 type UserService struct {
@@ -37,10 +36,9 @@ func (s *UserService) FindDetailUser(id int) (*UserRaw, error) {
 	return result, err
 }
 
-func (s *UserService) PatchUserName(id int, name *string) (sql.Result, error) {
-	fmt.Println(&name)
+func (s *UserService) PatchUserName(id *int, body *struct{ Name string }) (sql.Result, error) {
 
-	result, err := s.repository.PatchUserName(id, name)
+	result, err := s.repository.PatchUserName(id, body)
 
 	return result, err
 }

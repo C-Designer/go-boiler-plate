@@ -53,12 +53,18 @@ func UserController(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			Name  string
 		}
 
-		json.NewDecoder(r.Body).Decode(&body)
-
-		_, err := Service.CreateUser(body)
+		err := json.NewDecoder(r.Body).Decode(&body)
 
 		if err != nil {
+			Response(w, nil, http.StatusInternalServerError, err)
+			return
+		}
+
+		_, error := Service.CreateUser(body)
+
+		if error != nil {
 			Response(w, nil, http.StatusBadRequest, err)
+			return
 		}
 
 		Response(w, "OK", http.StatusOK, nil)
@@ -111,15 +117,22 @@ func UserController(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		// int의 zeroValue는 0
 		conversionNumberTypeId, _ := strconv.Atoi(stringTypeId)
 
-		var name *string
-		json.NewDecoder(r.Body).Decode(&name)
+		var body struct {
+			Name string
+		}
 
-		fmt.Println(name)
-		fmt.Println(&name)
-		result, err := Service.PatchUserName(conversionNumberTypeId, name)
+		err := json.NewDecoder(r.Body).Decode(&body)
+
+		if err != nil {
+			Response(w, nil, http.StatusInternalServerError, err)
+			return
+		}
+
+		result, err := Service.PatchUserName(&conversionNumberTypeId, &body)
 
 		if err != nil {
 			Response(w, nil, http.StatusBadRequest, err)
+			return
 		}
 		Response(w, result, http.StatusOK, nil)
 
