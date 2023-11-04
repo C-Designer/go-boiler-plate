@@ -12,6 +12,7 @@ import (
 type Users struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
+	// JSON을 구조체로 변환하기 쉽도록 자동매핑 설정
 }
 
 func main() {
@@ -20,9 +21,9 @@ func main() {
 
 	http.HandleFunc("/api/v1/user/", func(w http.ResponseWriter, r *http.Request) {
 		user.UserController(w, r, db)
-	})
+	})	// 핸들러 등록
 
-	log.Fatal(http.ListenAndServe(":5050", nil))
+	log.Fatal(http.ListenAndServe(":5050", nil))	// HTTP서버 실패시 실행 중단
 
 }
 
