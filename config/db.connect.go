@@ -12,9 +12,9 @@ func ConnectionDB() (*sql.DB, error) {
 	if err != nil {
 		fmt.Printf("Error %s when opening DB\n", err)
 	}
-	db.SetConnMaxIdleTime(10)
-	db.SetMaxOpenConns(10)
-	db.SetConnMaxLifetime(time.Minute * 3)
+	db.SetConnMaxIdleTime(10)	// 유휴 시간을 10초로 제한
+	db.SetMaxOpenConns(10)		// 커넥션 풀에서 동시에 최대 10개만 연결되도록
+	db.SetConnMaxLifetime(time.Minute * 3)	// 커넥션 생성 후 3분 지나면 닫히도록 설정
 
 	_, err = createTables(db)
 
