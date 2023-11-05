@@ -8,7 +8,7 @@ type UserService struct {
 	repository *UserRepository
 }
 
-var Service UserService
+var Service UserService	// 이 변수를 생성하는 이유?
 
 func (s *UserService) InitService(db *sql.DB) {
 
